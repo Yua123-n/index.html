@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>中英词汇测试</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .quiz-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 350px;
+        }
+        h1 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        #chineseWord {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #07C160;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #score {
+            text-align: center;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <h1>中英词汇测试</h1>
+        <div id="chineseWord"></div>
+        <button id="option1"></button>
+        <button id="option2"></button>
+        <div id="score"></div>
+    </div>
+
+    <script>
+        const vocabularyList = [
+            { chinese: "讲座/说话", english: "talk" },
+            { chinese: "举办", english: "organise" },
+            { chinese: "可获得", english: "available" },
+            { chinese: "参加", english: "join" },
+            { chinese: "发生", english: "take place" },
+            { chinese: "感兴趣", english: "interested" },
+            { chinese: "寻找", english: "look for" },
+            { chinese: "年度", english: "annual" },
+            { chinese: "广告", english: "advertisement" },
+            { chinese: "预约", english: "appointment" }
+        ];
+
+        let currentWordIndex = 0;
+        let score = 0;
+
+        const chineseWordElement = document.getElementById('chineseWord');
+        const option1Element = document.getElementById('option1');
+        const option2Element = document.getElementById('option2');
+        const scoreElement = document.getElementById('score');
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function startQuiz() {
+            shuffleArray(vocabularyList);
+            currentWordIndex = 0;
+            score = 0;
+            nextQuestion();
+        }
+
+        function nextQuestion() {
+            if (currentWordIndex >= vocabularyList.length) {
+                endQuiz();
+                return;
+            }
+
+            const currentWord = vocabularyList[currentWordIndex];
+            chineseWordElement.textContent = currentWord.chinese;
+
+            const correctAnswer = currentWord.english;
+            let incorrectAnswer;
+            do {
+                incorrectAnswer = vocabularyList[Math.floor(Math.random() * vocabularyList.length)].english;
+            } while (incorrectAnswer === correctAnswer);
+
+            const isCorrectFirst = Math.random() < 0.5;
+            option1Element.textContent = isCorrectFirst ? correctAnswer : incorrectAnswer;
+            option2Element.textContent = isCorrectFirst ? incorrectAnswer : correctAnswer;
+
+            option1Element.onclick = function() { checkAnswer(isCorrectFirst); };
+            option2Element.onclick = function() { checkAnswer(!isCorrectFirst); };
+
+            scoreElement.textContent = '得分: ' + score + ' / ' + currentWordIndex;
+        }
+
+        function checkAnswer(isCorrect) {
+            if (isCorrect) {
+                score++;
+            }
+            currentWordIndex++;
+            nextQuestion();
+        }
+
+        function endQuiz() {
+            chineseWordElement.textContent = "测试结束！";
+            option1Element.style.display = 'none';
+            option2Element.style.display = 'none';
+            scoreElement.textContent = '最终得分: ' + score + ' / ' + vocabularyList.length;
+            
+            var restartButton = document.createElement('button');
+            restartButton.textContent = '重新开始';
+            restartButton.onclick = startQuiz;
+            document.querySelector('.quiz-container').appendChild(restartButton);
+        }
+
+        startQuiz();
+    </script>
+</body>
+</html>
